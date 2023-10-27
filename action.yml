@@ -103,20 +103,13 @@ runs:
 
         echo '::notice ::There are changed files.'
 
-        # For multiline strings
-        # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
-        delimiter="$(openssl rand -hex 8)"
-        {
-          echo "file_paths<<$delimiter"
-          echo "$paths"
-          echo "$delimiter"
-        } >> "$GITHUB_OUTPUT"
+        echo "file_paths=${paths//$'\n'/ }" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Commit changed files
       if: ${{ steps.get_diff_file_paths.outputs.file_paths != '' }}
       # yamllint disable-line rule:line-length
-      uses: hituzi-no-sippo/commit-with-ghcp-action@462c3c7824f1bbcc60ad5a46e26a1fbae694fcf2
+      uses: hituzi-no-sippo/commit-with-ghcp-action@dbe67e71ed6e24b68d30f4dc6da2cc42b8994c32
       with:
         files: ${{ steps.get_diff_file_paths.outputs.file_paths }}
         commit_message: ${{ inputs.commit_message }}
